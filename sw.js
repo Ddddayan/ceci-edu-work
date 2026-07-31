@@ -1,6 +1,11 @@
-/* 课时管家 Service Worker - Network-first：更新推送后用户立即拿到新版，离线时回退缓存 */
-const CACHE = 'lesson-manager-v2';
-const ASSETS = ['./', './index.html', './manifest.json', './icon.png'];
+/* Ceci 课时管家 Service Worker - Network-first：更新推送后用户立即拿到新版，离线时回退缓存
+   版本历史：
+   v1 — 初版
+   v2 — 改为 network-first
+   v3 — 更换图标为用户上传附件 + 多尺寸；徽标改为手写 Ceci；名称改为 Ceci 课时管家
+*/
+const CACHE = 'lesson-manager-v3';
+const ASSETS = ['./', './index.html', './manifest.json', './icon-180.png', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(
@@ -18,13 +23,11 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
-  // 仅处理同源请求
   const url = new URL(e.request.url);
   if (url.origin !== location.origin) return;
   e.respondWith(
     fetch(e.request)
       .then(res => {
-        // 成功响应：更新缓存（只缓存 GET 成功响应）
         if (res.ok) {
           const copy = res.clone();
           caches.open(CACHE).then(c => c.put(e.request, copy)).catch(() => {});

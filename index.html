@@ -5,12 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="课时管家">
+<meta name="apple-mobile-web-app-title" content="Ceci 课时管家">
 <meta name="theme-color" content="#4f46e5">
 <link rel="manifest" href="manifest.json">
-<link rel="icon" type="image/png" href="icon.png">
-<link rel="apple-touch-icon" href="icon.png">
-<title>课时管家 · 课时管理系统</title>
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+<title>Ceci 课时管家 · 课时管理系统</title>
 <style>
   :root{
     --primary:#4f46e5; --primary-dark:#4338ca; --primary-light:#eef2ff;
@@ -39,9 +40,14 @@
   }
   .topbar .logo{display:flex;align-items:center;gap:10px}
   .topbar .logo .logo-icon{
-    width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.18);
-    display:flex;align-items:center;justify-content:center;font-size:18px;
+    width:40px;height:40px;border-radius:11px;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(255,255,255,.18);
     border:1px solid rgba(255,255,255,.25); backdrop-filter:blur(4px);
+    transform:rotate(-6deg);
+  }
+  .topbar .logo .logo-icon svg{
+    width:30px;height:30px;display:block;
   }
   .topbar h1{font-size:17px;font-weight:700;letter-spacing:.5px}
   .topbar .sub{font-size:11px;opacity:.85;font-weight:400;letter-spacing:2px}
@@ -347,9 +353,15 @@
 <!-- ===== 顶栏 ===== -->
 <header class="topbar">
   <div class="logo">
-    <div class="logo-icon">📚</div>
+    <div class="logo-icon">
+      <svg viewBox="0 0 64 40" xmlns="http://www.w3.org/2000/svg" aria-label="Ceci">
+        <text x="32" y="30" text-anchor="middle" font-size="28" font-style="italic" font-weight="700"
+          font-family="'Snell Roundhand','Bradley Hand','Segoe Script','Dancing Script','Comic Sans MS',cursive"
+          fill="#ffffff">Ceci</text>
+      </svg>
+    </div>
     <div>
-      <h1 id="topTitle">课时管家</h1>
+      <h1 id="topTitle">Ceci 课时管家</h1>
       <div class="sub" id="topSub">日历工作台</div>
     </div>
   </div>
@@ -656,7 +668,7 @@ function switchView(view) {
   document.querySelectorAll('.tabbar .tab').forEach(t => t.classList.toggle('active', t.dataset.view === view));
   const topAddBtn = document.getElementById('topAddBtn');
   if (view === 'cal') {
-    document.getElementById('topTitle').textContent = '课时管家';
+    document.getElementById('topTitle').textContent = 'Ceci 课时管家';
     document.getElementById('topSub').textContent = '日历工作台';
     topAddBtn.style.display = 'flex';
     renderCalendar();
