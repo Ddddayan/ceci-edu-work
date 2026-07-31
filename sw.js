@@ -1,5 +1,5 @@
-/* 课时管家 Service Worker - 缓存核心资源，支持离线与桌面安装 */
-const CACHE = 'lesson-manager-v1';
+/* 课时管家 Service Worker - Network-first：更新推送后用户立即拿到新版，离线时回退缓存 */
+const CACHE = 'lesson-manager-v2';
 const ASSETS = ['./', './index.html', './manifest.json', './icon.png'];
 
 self.addEventListener('install', e => {
@@ -18,13 +18,19 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
+  // 仅处理同源请求
+  const url = new URL(e.request.url);
+  if (url.origin !== location.origin) return;
   e.respondWith(
-    caches.match(e.request).then(hit => {
-      return hit || fetch(e.request).then(res => {
-        const copy = res.clone();
-        caches.open(CACHE).then(c => c.put(e.request, copy)).catch(() => {});
+    fetch(e.request)
+      .then(res => {
+        // 成功响应：更新缓存（只缓存 GET 成功响应）
+        if (res.ok) {
+          const copy = res.clone();
+          caches.open(CACHE).then(c => c.put(e.request, copy)).catch(() => {});
+        }
         return res;
-      }).catch(() => caches.match('./index.html'));
-    })
+      })
+      .catch(() => caches.match(e.request).then(hit => hit || caches.match('./index.html')))
   );
 });
