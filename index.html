@@ -179,30 +179,41 @@
     display:flex;align-items:center;gap:8px;margin:12px 12px 0;padding:10px 12px;
     background:var(--card);border-radius:14px;box-shadow:var(--shadow);flex-wrap:wrap;
   }
-  .filter-bar .f-label{font-size:12px;color:var(--text-2);flex-shrink:0;font-weight:600}
-  .month-picker{
-    display:flex;align-items:center;gap:0;flex:1 1 110px;min-width:110px;
-    background:#f4f5fa;border-radius:10px;padding:1px;
+  .filter-bar .f-label{font-size:12px;color:var(--text-2);flex-shrink:0;font-weight:600;width:100%;margin-bottom:-2px}
+  .filter-bar .range-btn{
+    position:relative;flex:1 1 0;min-width:0;display:flex;align-items:center;gap:5px;
+    background:#f4f5fa;border:1.5px solid transparent;border-radius:10px;padding:9px 10px;
+    font-family:inherit;font-size:13px;font-weight:700;color:var(--text);cursor:pointer;
+    transition:border .15s,background .15s;
   }
-  .month-picker .mp-btn{
-    width:30px;height:30px;border:none;background:transparent;color:var(--text-2);
-    border-radius:8px;cursor:pointer;font-size:15px;flex-shrink:0;position:relative;z-index:2;
+  .filter-bar .range-btn .rb-native{
+    position:absolute;inset:0;width:100%;height:100%;opacity:0;border:none;
+    -webkit-appearance:none;appearance:none;cursor:pointer;z-index:2;
   }
-  .month-picker .mp-btn:active{background:var(--primary-light);color:var(--primary)}
-  .month-picker .mp-val{
-    flex:1;text-align:center;font-size:13px;font-weight:700;cursor:pointer;border-radius:8px;
-    padding:6px 2px;min-width:0;
-  }
+  .filter-bar .range-btn:active{background:var(--primary-light)}
+  .filter-bar .range-btn.on{border-color:var(--primary);background:#fff}
+  .filter-bar .range-btn .rb-ico{font-size:12px;flex-shrink:0;opacity:.75}
+  .filter-bar .range-btn .rb-txt{flex:1;min-width:0;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .filter-bar .joiner{
-    flex:0 0 auto;color:var(--text-3);font-size:13px;padding:0 2px;user-select:none;
+    flex:0 0 auto;color:var(--text-3);font-size:13px;padding:0 1px;user-select:none;
   }
   .filter-bar .swap{
-    flex:1 1 100%;margin-top:6px;
-    background:var(--primary-light);color:var(--primary);font-weight:700;
-    border:none;border-radius:10px;padding:7px 14px;font-size:12px;cursor:pointer;
-    font-family:inherit;letter-spacing:.5px;
+    flex:0 0 auto;background:var(--primary-light);color:var(--primary);font-weight:700;
+    border:none;border-radius:10px;padding:9px 12px;font-size:12px;cursor:pointer;
+    font-family:inherit;white-space:nowrap;
   }
+  .filter-bar .swap.active{background:var(--primary);color:#fff}
   .filter-bar .swap:active{filter:brightness(.95)}
+  .quick-picks{
+    flex:1 1 100%;display:flex;flex-wrap:wrap;gap:6px;margin-top:2px;
+    padding-top:10px;border-top:1px dashed var(--line);
+  }
+  .quick-picks .qp{
+    flex:1 1 auto;min-width:72px;background:#f4f5fa;border:none;border-radius:9px;
+    padding:8px 10px;font-size:12px;font-weight:600;color:var(--text-2);
+    font-family:inherit;cursor:pointer;white-space:nowrap;
+  }
+  .quick-picks .qp:active{background:var(--primary-light);color:var(--primary)}
   /* ===== 学生卡片 ===== */
   .student-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:12px}
   .student-card{
@@ -439,19 +450,26 @@
   <!-- ===== 视图2：学生档案 ===== -->
   <section class="view" id="view-students">
     <div class="filter-bar">
-      <span class="f-label">时间窗</span>
-      <div class="month-picker">
-        <button class="mp-btn" id="fsPrev">‹</button>
-        <div class="mp-val" id="fsVal">2026年7月</div>
-        <button class="mp-btn" id="fsNext">›</button>
-      </div>
+      <span class="f-label">时间范围</span>
+      <button class="range-btn" id="fsBtn" title="点击选择开始日期">
+        <span class="rb-ico">📅</span><span class="rb-txt" id="fsVal">—</span>
+        <input type="date" class="rb-native" id="fsNative" aria-label="开始日期">
+      </button>
       <span class="joiner">至</span>
-      <div class="month-picker">
-        <button class="mp-btn" id="fePrev">‹</button>
-        <div class="mp-val" id="feVal">2026年7月</div>
-        <button class="mp-btn" id="feNext">›</button>
+      <button class="range-btn" id="feBtn" title="点击选择结束日期">
+        <span class="rb-ico">📅</span><span class="rb-txt" id="feVal">—</span>
+        <input type="date" class="rb-native" id="feNative" aria-label="结束日期">
+      </button>
+      <button class="swap" id="btnSwap" title="自定义范围（点击显示快捷选项）">自定义</button>
+      <div class="quick-picks" id="quickPicks" style="display:none">
+        <button class="qp" data-days="7" data-unit="d">最近7天</button>
+        <button class="qp" data-days="30" data-unit="d">最近30天</button>
+        <button class="qp" data-months="1" data-unit="m">本月</button>
+        <button class="qp" data-months="3" data-unit="m">近3个月</button>
+        <button class="qp" data-months="6" data-unit="m">近6个月</button>
+        <button class="qp" data-month="1" data-unit="y">今年</button>
+        <button class="qp" id="qpAll" data-unit="all">全部时间</button>
       </div>
-      <button class="swap" id="btnSwap" title="单月 / 区间切换">单月模式</button>
     </div>
 
     <div class="stats">
@@ -616,8 +634,7 @@
   </div>
   <div style="overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch">
     <div class="detail-stats">
-      <div class="ds"><b id="dCount">0</b><span>节 · 当前时间窗</span></div>
-      <div class="ds"><b id="dTotal">0</b><span>节 · 全部累计</span></div>
+      <div class="ds"><b id="dCount">0</b><span id="dRange">节 · 当前时间窗</span></div>      <div class="ds"><b id="dTotal">0</b><span>节 · 全部累计</span></div>
       <div class="ds"><b id="dHours">0h</b><span>总课时时长</span></div>
     </div>
     <div class="detail-info">
@@ -654,9 +671,9 @@ const KEY = 'lesson_manager_v1';
 let state = { students: [], lessons: [] };
 let curDate = null;        // 日历当前查看的月份 {y,m}
 let selectedDay = null;    // 选中的日期 'YYYY-MM-DD'
-let filterStart = null;    // {y,m}
-let filterEnd = null;
-let swapMode = false;      // false=单月 true=区间
+let filterStart = null;    // 'YYYY-MM-DD' 自定义时间窗开始
+let filterEnd = null;      // 'YYYY-MM-DD' 自定义时间窗结束
+let latestLessonDate = null; // 数据中最新一节课的日期（快捷选项参考点）
 let editingLessonId = null;
 let editingStudentId = null;
 let currentStudentId = null; // 详情页当前学生
@@ -690,9 +707,9 @@ function findStudentByName(name) {
 function lessonsOfStudent(id, fromKey = null, toKey = null) {
   return state.lessons.filter(l => {
     if (l.studentId !== id) return false;
-    if (fromKey && toKey) {
-      const k = (l.date || '').slice(0, 7);
-      if (k < fromKey || k > toKey) return false;
+    if (fromKey !== null && toKey !== null) {
+      const d = l.date || '';
+      if (d < fromKey || d > toKey) return false;
     }
     return true;
   }).sort((a, b) => (a.date + a.startTime).localeCompare(b.date + b.startTime));
@@ -1025,60 +1042,119 @@ function deleteLesson() {
 }
 
 /* ================= 学生档案页 ================= */
+/* ---- 自定义时间窗工具 ---- */
+function fmtCnDate(key) {
+  if (!key || key === '0000-01-01') return '不限';
+  const [y, m, d] = key.split('-').map(Number);
+  return `${y}年${m}月${d}日`;
+}
+function fmtShortDate(key) {
+  if (!key || key === '0000-01-01') return '不限';
+  if (key === '9999-12-31') return '至今';
+  const [y, m, d] = key.split('-').map(Number);
+  return `${y}/${m}/${d}`;
+}
+function daysAgoKey(n) {
+  const t = new Date(); t.setDate(t.getDate() - n);
+  return fmtDate(t.getFullYear(), t.getMonth() + 1, t.getDate());
+}
+function monthsAgoKey(n) {
+  const t = new Date(); t.setDate(1); t.setMonth(t.getMonth() - n);
+  return fmtDate(t.getFullYear(), t.getMonth() + 1, 1);
+}
 function initFilter() {
   const t = new Date();
-  filterStart = { y: t.getFullYear(), m: t.getMonth() + 1 };
-  filterEnd = { y: t.getFullYear(), m: t.getMonth() + 1 };
+  filterEnd = fmtDate(t.getFullYear(), t.getMonth() + 1, t.getDate());
+  filterStart = fmtDate(t.getFullYear(), t.getMonth() + 1, 1);
+  latestLessonDate = state.lessons.reduce((mx, l) => (l.date > mx ? l.date : mx), today());
 }
-function shiftMonthFilter(side, delta) {
-  const f = side === 's' ? filterStart : filterEnd;
-  f.m += delta;
-  if (f.m < 1) { f.m = 12; f.y--; }
-  if (f.m > 12) { f.m = 1; f.y++; }
-  // 结束不得早于开始（单月模式联动）
-  if (!swapMode && side === 's') { filterEnd = { ...filterStart }; }
-  if (filterEnd.m * 100 + filterEnd.y < filterStart.m * 100 + filterStart.y) {
-    filterEnd = { ...filterStart };
+function setFilterRange(from, to) {
+  filterStart = from;
+  filterEnd = to;
+  if (filterStart && filterEnd && filterStart > filterEnd) {
+    filterStart = filterEnd; filterEnd = from;
   }
   renderStudents();
 }
-function renderFilterBar() {
-  const fs = document.getElementById('fsVal');
-  const fe = document.getElementById('feVal');
-  const swap = document.getElementById('btnSwap');
-  fs.textContent = `${filterStart.y}年${filterStart.m}月`;
-  fe.textContent = `${filterEnd.y}年${filterEnd.m}月`;
-  swap.textContent = swapMode ? '区间' : '单月';
-  swap.classList.toggle('active', swapMode);
+/* 自定义日期选择：透明原生 date 输入覆盖按钮，点击直接唤起系统日期选择器（iOS 友好） */
+function pickDate(side) {
+  const inp = document.getElementById(side === 's' ? 'fsNative' : 'feNative');
+  const cur = side === 's' ? filterStart : filterEnd;
+  const valid = cur && cur !== '0000-01-01' && cur !== '9999-12-31';
+  inp.value = valid ? cur : today();
 }
-document.getElementById('fsPrev').addEventListener('click', () => shiftMonthFilter('s', -1));
-document.getElementById('fsNext').addEventListener('click', () => shiftMonthFilter('s', 1));
-document.getElementById('fePrev').addEventListener('click', () => shiftMonthFilter('e', -1));
-document.getElementById('feNext').addEventListener('click', () => shiftMonthFilter('e', 1));
-document.getElementById('btnSwap').addEventListener('click', () => {
-  swapMode = !swapMode;
-  if (!swapMode) filterEnd = { ...filterStart };
-  renderStudents();
+function bindNativeDate(side) {
+  const inp = document.getElementById(side === 's' ? 'fsNative' : 'feNative');
+  inp.addEventListener('change', () => {
+    if (!inp.value) return;
+    if (side === 's') setFilterRange(inp.value, filterEnd || inp.value);
+    else setFilterRange(filterStart || inp.value, inp.value);
+  });
+  // iOS：change 后失焦重置，确保下次选择同一日期仍触发
+  inp.addEventListener('click', e => e.stopPropagation());
+}
+function syncNativeDate() {
+  ['s', 'e'].forEach(side => {
+    const inp = document.getElementById(side === 's' ? 'fsNative' : 'feNative');
+    const cur = side === 's' ? filterStart : filterEnd;
+    const valid = cur && cur !== '0000-01-01' && cur !== '9999-12-31';
+    inp.value = valid ? cur : today();
+  });
+}
+function renderFilterBar() {
+  document.getElementById('fsVal').textContent = fmtShortDate(filterStart);
+  document.getElementById('feVal').textContent = fmtShortDate(filterEnd);
+  document.getElementById('fsBtn').title = '开始：' + fmtCnDate(filterStart);
+  document.getElementById('feBtn').title = '结束：' + fmtCnDate(filterEnd);
+  const unlim = filterStart === '0000-01-01' || filterEnd === '9999-12-31';
+  const swap = document.getElementById('btnSwap');
+  swap.textContent = unlim ? '不限时间' : '自定义';
+  syncNativeDate();
+}
+bindNativeDate('s');
+bindNativeDate('e');
+document.getElementById('quickPicks').addEventListener('click', e => {
+  const b = e.target.closest('.qp');
+  if (!b) return;
+  if (b.dataset.unit === 'all') {
+    setFilterRange('0000-01-01', '9999-12-31');
+    showToast('已显示全部时间');
+  } else if (b.dataset.unit === 'd') {
+    const n = Number(b.dataset.days);
+    const anchor = latestLessonDate || today();
+    const t = new Date(anchor + 'T00:00:00'); t.setDate(t.getDate() - (n - 1));
+    setFilterRange(fmtDate(t.getFullYear(), t.getMonth() + 1, t.getDate()), anchor);
+  } else if (b.dataset.unit === 'm') {
+    const t = new Date(); t.setDate(1); t.setMonth(t.getMonth() - (Number(b.dataset.months) - 1));
+    const s = fmtDate(t.getFullYear(), t.getMonth() + 1, 1);
+    setFilterRange(s, today());
+  } else if (b.dataset.unit === 'y') {
+    setFilterRange(`${new Date().getFullYear()}-01-01`, today());
+  }
+  toggleQuickPicks(false);
 });
-function fmtMonthPick(f) { return `${f.y}年${f.m}月`; }
-function monthKeyOf(f) { return `${f.y}-${pad(f.m)}`; }
+document.getElementById('btnSwap').addEventListener('click', () => {
+  const box = document.getElementById('quickPicks');
+  toggleQuickPicks(!box._open);
+});
+function toggleQuickPicks(open) {
+  const box = document.getElementById('quickPicks');
+  box._open = !!open;
+  box.style.display = open ? 'flex' : 'none';
+  document.getElementById('btnSwap').classList.toggle('active', !!open);
+}
 
 function renderStudents() {
   renderFilterBar();
-  const fk = monthKeyOf(filterStart), tk = monthKeyOf(filterEnd);
+  const fk = filterStart, tk = filterEnd;
   const grid = document.getElementById('studentGrid');
   grid.innerHTML = '';
-  const totalLessons = state.lessons.filter(l => {
-    const k = (l.date || '').slice(0, 7);
-    return k >= fk && k <= tk;
-  }).length;
+  const inWin = d => (d || '') >= fk && (d || '') <= tk;
+  const totalLessons = state.lessons.filter(l => inWin(l.date)).length;
   document.getElementById('stTotal').textContent = totalLessons;
   document.getElementById('stStudents').textContent = state.students.length;
   const activeIds = new Set();
-  state.lessons.forEach(l => {
-    const k = (l.date || '').slice(0, 7);
-    if (k >= fk && k <= tk) activeIds.add(l.studentId);
-  });
+  state.lessons.forEach(l => { if (inWin(l.date)) activeIds.add(l.studentId); });
   document.getElementById('stActive').textContent = activeIds.size;
   document.getElementById('studentCount').textContent = `${state.students.length} 位`;
   const empty = document.getElementById('studentEmpty');
@@ -1098,7 +1174,7 @@ function renderStudents() {
       <div class="avatar" style="background:${avatarColor(st.name)}">${esc(st.name.slice(0, 1))}</div>
       <div class="s-name"><span class="nm">${esc(st.name)}</span></div>
       <div class="s-meta">${esc([st.grade, st.school].filter(Boolean).join(' · ') || '档案待完善')}</div>
-      <div class="s-count"><b>${cnt}</b><span>节课 · ${fmtMonthPick(filterStart)}${swapMode ? ' — ' + fmtMonthPick(filterEnd) : ''}</span></div>`;
+      <div class="s-count"><b>${cnt}</b><span>节课 · ${fmtShortDate(filterStart)}~${fmtShortDate(filterEnd)}</span></div>`;
     card.addEventListener('click', () => openStudentDetail(st.id));
     grid.appendChild(card);
   });
@@ -1184,11 +1260,11 @@ function openStudentDetail(id) {
   document.getElementById('diContact').textContent = st.contact || '—';
   document.getElementById('diCourse').textContent = st.course || '—';
   // 统计
-  const fk = monthKeyOf(filterStart), tk = monthKeyOf(filterEnd);
-  const inWindow = lessonsOfStudent(id, fk, tk);
+  const inWindow = lessonsOfStudent(id, filterStart, filterEnd);
   const all = lessonsOfStudent(id);
   const totalMins = all.reduce((a, l) => a + calcDuration(l.startTime, l.endTime), 0);
   document.getElementById('dCount').textContent = inWindow.length;
+  document.getElementById('dRange').textContent = `${fmtShortDate(filterStart)}~${fmtShortDate(filterEnd)}`;
   document.getElementById('dTotal').textContent = all.length;
   document.getElementById('dHours').textContent = durationShort(totalMins);
   // 课时列表（按日期分组，滚动查看）
@@ -1239,31 +1315,6 @@ function closeDetail() {
 }
 function openEditStudent() {
   if (currentStudentId) openStudentModal(currentStudentId);
-}
-
-/* ================= 月份快速选择 ================= */
-document.getElementById('fsVal').addEventListener('click', () => quickPick('s'));
-document.getElementById('feVal').addEventListener('click', () => quickPick('e'));
-function quickPick(side) {
-  const f = side === 's' ? filterStart : filterEnd;
-  const sel = document.createElement('input');
-  sel.type = 'month';
-  sel.value = `${f.y}-${pad(f.m)}`;
-  sel.style.cssText = 'position:fixed;opacity:0;pointer-events:none;width:1px;height:1px';
-  document.body.appendChild(sel);
-  sel.showPicker && sel.showPicker();
-  sel.addEventListener('change', () => {
-    if (sel.value) {
-      const [y, m] = sel.value.split('-').map(Number);
-      if (side === 's') { filterStart = { y, m }; if (!swapMode) filterEnd = { y, m }; }
-      else filterEnd = { y, m };
-      if (monthKeyOf(filterEnd) < monthKeyOf(filterStart)) filterEnd = { ...filterStart };
-      renderStudents();
-    }
-    sel.remove();
-  });
-  sel.addEventListener('blur', () => setTimeout(() => sel.remove(), 800));
-  sel.click();
 }
 
 /* ================= XLSX 引擎（纯前端，零外部依赖） ================= */
@@ -1530,12 +1581,12 @@ function cleanSheetName(name, used) {
   used.add(n); return n;
 }
 const fmtMonthCn = f => `${f.y}年${f.m}月`;
+
 /* ================= 数据导出 / 导入 ================= */
 function exportDetail() {
-  const fk = monthKeyOf(filterStart), tk = monthKeyOf(filterEnd);
   const windowLessons = state.lessons.filter(l => {
-    const k = (l.date || '').slice(0, 7);
-    return k >= fk && k <= tk;
+    const d = l.date || '';
+    return d >= filterStart && d <= filterEnd;
   }).sort((a, b) => (a.date + a.startTime).localeCompare(b.date + b.startTime));
   if (!windowLessons.length) { showToast('当前时间窗内暂无课时，无法导出'); return; }
   const byStudent = {};
@@ -1553,9 +1604,7 @@ function exportDetail() {
     });
     return { name: cleanSheetName(st ? st.name : '未知学生', used), rows, widths: [26, 14, 14] };
   });
-  const fname = fk === tk
-    ? `Ceci课时明细_${filterStart.y}年${filterStart.m}月.xlsx`
-    : `Ceci课时明细_${filterStart.y}年${filterStart.m}月-${filterEnd.y}年${filterEnd.m}月.xlsx`;
+  const fname = `Ceci课时明细_${filterStart.replace(/-/g, '')}-${filterEnd.replace(/-/g, '')}.xlsx`;
   downloadBlob(buildXlsx(sheets), fname);
   showToast(`已导出 ${sheets.length} 名学生的课时明细 📤`);
 }
@@ -1712,6 +1761,7 @@ function importData(students, lessons) {
     }
   }
   save();
+  latestLessonDate = state.lessons.reduce((mx, l) => (l.date > mx ? l.date : mx), today());
   renderCalendar(); renderDay(); renderStudents();
   return { newSt, updSt, newLs, updLs, skipped };
 }

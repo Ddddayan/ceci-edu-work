@@ -3,8 +3,9 @@
    v1 — 初版
    v2 — 改为 network-first
    v3 — 更换图标为用户上传附件 + 多尺寸；徽标改为手写 Ceci；名称改为 Ceci 课时管家
+   v4 — 学生档案时间窗改为自定义日期范围 + 快捷选项
 */
-const CACHE = 'lesson-manager-v3';
+const CACHE = 'lesson-manager-v4';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-180.png', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
